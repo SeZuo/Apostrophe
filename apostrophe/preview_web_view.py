@@ -3,7 +3,7 @@ import webbrowser
 import gi
 
 gi.require_version('WebKit2', '4.0')
-from gi.repository import WebKit2, GLib, GObject
+from gi.repository import WebKit2, GLib, GObject, Gio
 
 
 class PreviewWebView(WebKit2.WebView):
@@ -51,6 +51,7 @@ if (canScroll && isRendered) {{
 
     __gsignals__ = {
         "scroll-scale-changed": (GObject.SIGNAL_RUN_LAST, None, (float,)),
+        "local-file-requested": (GObject.SIGNAL_RUN_LAST, None, (str,)),
     }
 
     def __init__(self):
@@ -91,7 +92,11 @@ if (canScroll && isRendered) {{
     def on_decide_policy(self, _web_view, decision, decision_type):
         if decision_type == WebKit2.PolicyDecisionType.NAVIGATION_ACTION and \
                 decision.get_navigation_action().is_user_gesture():
-            webbrowser.open(decision.get_request().get_uri())
+            uri = decision.get_request().get_uri()
+            if uri.startswith('file://'):
+                self.emit("local-file-requested", uri)
+            else:
+                webbrowser.open(decision.get_request().get_uri())
             decision.ignore()       # Do not follow the link in the WebView
             return True
         return False

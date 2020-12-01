@@ -27,6 +27,7 @@ class PreviewHandler:
     connects it all together (including synchronization, ie. text changes, scroll)."""
 
     def __init__(self, window, content, editor, text_view):
+        self.window = window
         self.text_view = text_view
 
         self.web_view = None
@@ -68,9 +69,8 @@ class PreviewHandler:
 
                 # Show preview once the load is finished
                 self.web_view.connect("load-changed", self.on_load_changed)
-
                 # All links will be opened in default browser, but local files are opened in apps.
-                self.web_view.connect("decide-policy", self.on_click_link)
+                self.web_view.connect("local-file-requested", self.on_local_file_requested)
 
             if self.web_view.is_loading():
                 self.web_view_pending_html = html
@@ -137,6 +137,9 @@ class PreviewHandler:
             else:
                 self.__show(step=Step.RENDER)
 
+    def on_local_file_requested(self, _web_view, uri):
+        self.window.load_file(uri)
+
     def on_text_view_scrolled(self, _text_view, scale):
         if self.shown and not math.isclose(scale, self.web_view.get_scroll_scale(), rel_tol=1e-4):
             self.web_view.set_scroll_scale(scale)
@@ -145,10 +148,3 @@ class PreviewHandler:
         if self.shown and self.text_view.get_mapped() and \
                 not math.isclose(scale, self.text_view.get_scroll_scale(), rel_tol=1e-4):
             self.text_view.set_scroll_scale(scale)
-
-    @staticmethod
-    def on_click_link(web_view, decision, _decision_type):
-        if web_view.get_uri().startswith(("http://", "https://", "www.")):
-            webbrowser.open(web_view.get_uri())
-            decision.ignore()
-            return True
