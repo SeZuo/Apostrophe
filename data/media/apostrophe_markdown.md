@@ -134,6 +134,14 @@ Enclosing an URL in pointy brackets transforms them into links:
 This is an [inline link](/url), and here's [one with
 a title](http://fsf.org "click here for a good time!").
 
+#### Local Links:
+
+You can link to other local markdown files using absolute or relative
+paths. Clicking on local links in the preview will open the file in
+Apostrophe:
+
+Here is a [link to another local markdown](./local_markdown.md).
+
 ### Images
 
 ![This is the caption](/url/of/image.png)
