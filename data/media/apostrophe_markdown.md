@@ -144,7 +144,7 @@ Here is a [link to another local markdown](./local_markdown.md).
 
 ### Images
 
-![This is the caption](/url/of/image.png)
+![This is the caption](markdown-mark.svg)
 
 ### Footnotes
 
