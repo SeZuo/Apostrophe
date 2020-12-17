@@ -8,7 +8,7 @@ from apostrophe.preview_renderer import PreviewRenderer
 from apostrophe.settings import Settings
 
 gi.require_version('WebKit2', '4.0')
-from gi.repository import WebKit2, GLib, Gtk
+from gi.repository import WebKit2, GLib, Gtk, Gio
 
 from apostrophe.preview_converter import PreviewConverter
 from apostrophe.preview_web_view import PreviewWebView
@@ -138,7 +138,7 @@ class PreviewHandler:
                 self.__show(step=Step.RENDER)
 
     def on_local_file_requested(self, _web_view, uri):
-        self.window.load_file(uri)
+        self.window.load_file(Gio.File.new_for_uri(uri))
 
     def on_text_view_scrolled(self, _text_view, scale):
         if self.shown and not math.isclose(scale, self.web_view.get_scroll_scale(), rel_tol=1e-4):
